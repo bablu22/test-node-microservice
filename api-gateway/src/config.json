@@ -1,0 +1,39 @@
+{
+  "services": {
+    "product": {
+      "url": "http://localhost:4001",
+      "routes": [
+        {
+          "path": "/products",
+          "methods": ["get"],
+          "middlewares": []
+        },
+        {
+          "path": "/products",
+          "methods": ["post"],
+          "middlewares": ["auth"]
+        },
+        {
+          "path": "/products/:id",
+          "methods": ["get"],
+          "middlewares": []
+        }
+      ]
+    },
+    "inventory": {
+      "url": "http://localhost:4002",
+      "routes": [
+        {
+          "path": "/inventories/:id",
+          "methods": ["put"],
+          "middlewares": ["auth"]
+        },
+        {
+          "path": "/inventories/:id/details",
+          "methods": ["get"],
+          "middlewares": ["auth"]
+        }
+      ]
+    }
+  }
+}
