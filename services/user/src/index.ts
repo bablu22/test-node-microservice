@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "Hello from product service" });
+  res.status(200).json({ message: "Hello from user service" });
 });
 
 app.get("/health", (req, res) => {
@@ -39,8 +39,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ message: "Internal server error" });
 });
 
-const PORT = process.env.PORT || 4001;
-const SERVICE_NAME = process.env.SERVICE_NAME || "Product Service";
+const PORT = process.env.PORT || 4004;
+const SERVICE_NAME = process.env.SERVICE_NAME || "user";
 
 app.listen(PORT, () => {
   console.log(`${SERVICE_NAME} is running on port ${PORT}`);
