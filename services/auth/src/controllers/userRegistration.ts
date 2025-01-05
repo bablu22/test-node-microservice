@@ -3,7 +3,20 @@ import { UserCreateDTOSchema } from "@/schema";
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import axios from "axios";
-import { USER_SERVICE } from "@/config";
+import { EMAIL_SERVICE, USER_SERVICE } from "@/config";
+
+const generateVerificationCode = () => {
+  // Get current timestamp in milliseconds
+  const timestamp = new Date().getTime().toString();
+
+  // Generate a random 2-digit number
+  const randomNum = Math.floor(10 + Math.random() * 90); // Ensures 2-digit random number
+
+  // Combine timestamp and random number and extract last 5 digits
+  let code = (timestamp + randomNum).slice(-5);
+
+  return code; //
+};
 
 const userRegistration = async (
   req: Request,
@@ -22,6 +35,7 @@ const userRegistration = async (
     const existingUser = await prisma.user.findUnique({
       where: {
         email: parsedBody.data.email,
+        verified: true,
       },
     });
 
@@ -56,6 +70,29 @@ const userRegistration = async (
       name: newUser.name,
       email: newUser.email,
     });
+
+    const code = generateVerificationCode();
+    await prisma.verificationCode.create({
+      data: {
+        code: code,
+        userId: newUser.id,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
+      },
+    });
+
+    await axios.post(`${EMAIL_SERVICE}/emails/send`, {
+      recipient: newUser.email,
+      subject: "Email Verification",
+      body: `Your verification code is ${code}`,
+      source: "user-registration",
+    });
+
+    res.status(201).json({
+      message: "Please check your email for verification code",
+      data: newUser,
+    });
+
+    return;
   } catch (error) {
     next(error);
   }

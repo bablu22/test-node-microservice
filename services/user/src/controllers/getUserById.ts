@@ -23,7 +23,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     } else {
       user = await prisma.user.findUnique({
         where: {
-          id: String(id),
+          authUserId: id,
         },
       });
     }

@@ -28,5 +28,16 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
 
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    restart: on-failure
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    volumes:
+      - mailhog:/var/lib/mailhog
+
 volumes:
   postgres:
+  mailhog:

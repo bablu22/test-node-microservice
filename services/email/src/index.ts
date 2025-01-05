@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import router from "./routes";
-import e from "express";
 
 dotenv.config();
 
@@ -20,7 +19,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "Hello from auth service" });
+  res.status(200).json({ message: "Hello from email service" });
 });
 
 app.get("/health", (req, res) => {
@@ -37,11 +36,11 @@ app.use((req, res) => {
 // Error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
-  res.status(500).json({ message: err.message || "Something went wrong" });
+  res.status(500).json({ message: "Internal server error" });
 });
 
-const PORT = process.env.PORT || 4003;
-const SERVICE_NAME = process.env.SERVICE_NAME || "auth";
+const PORT = process.env.PORT || 4005;
+const SERVICE_NAME = process.env.SERVICE_NAME || "email";
 
 app.listen(PORT, () => {
   console.log(`${SERVICE_NAME} is running on port ${PORT}`);
