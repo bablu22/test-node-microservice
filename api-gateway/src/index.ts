@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { configureRoutes } from "./utils";
 
 dotenv.config();
+const PORT = process.env.PORT || 8081;
 
 const app = express();
 
@@ -44,19 +45,14 @@ app.use((_req, res) => {
 });
 
 // error handler
-app.use(
-  (
-    err: Error,
-    _req: express.Request,
-    res: express.Response,
-    _next: express.NextFunction,
-  ) => {
-    console.error(err.stack);
-    res.status(500).json({ message: "Internal Server Error" });
-  },
-);
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.status(500).json({
+    source: req.path,
+    message: err.message,
+    error: err,
+  });
+});
 
-const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
   console.log(`API Gateway is running on port ${PORT}`);
 });

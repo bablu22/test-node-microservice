@@ -6,7 +6,7 @@
         {
           "path": "/products",
           "methods": ["get"],
-          "middlewares": []
+          "middlewares": ["auth"]
         },
         {
           "path": "/products",
@@ -30,6 +30,41 @@
         },
         {
           "path": "/inventories/:id/details",
+          "methods": ["get"],
+          "middlewares": ["auth"]
+        }
+      ]
+    },
+    "auth": {
+      "url": "http://localhost:4003",
+      "routes": [
+        {
+          "path": "/auth/register",
+          "methods": ["post"],
+          "middlewares": []
+        },
+        {
+          "path": "/auth/login",
+          "methods": ["post"],
+          "middlewares": []
+        },
+        {
+          "path": "/auth/verify-email",
+          "methods": ["post"],
+          "middlewares": []
+        },
+        {
+          "path": "/auth/verify-token",
+          "methods": ["post"],
+          "middlewares": []
+        }
+      ]
+    },
+    "user": {
+      "url": "http://localhost:4004",
+      "routes": [
+        {
+          "path": "/users/:id",
           "methods": ["get"],
           "middlewares": ["auth"]
         }

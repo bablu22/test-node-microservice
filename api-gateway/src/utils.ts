@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { Express, Request, Response } from "express";
 import config from "./config.json";
 import axios from "axios";
+import middlewares from "./middlewares";
 
 export const createHandler = (
   hostname: string,
@@ -14,6 +15,7 @@ export const createHandler = (
         Object.keys(req.params).forEach((param) => {
           url = url.replace(`:${param}`, req.params[param]);
         });
+
       const { data } = await axios({
         method,
         url,
@@ -30,24 +32,29 @@ export const createHandler = (
 
       res.json(data);
     } catch (error) {
-      console.error(error);
       if (error instanceof axios.AxiosError) {
-        res.status(error.response?.status || 500).send(error.response?.data);
+        return res
+          .status(error.response?.status || 500)
+          .json(error.response?.data);
       }
-      res.status(500).send("Internal Server Error");
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   };
 };
 
-export const configureRoutes = (app) => {
+export const getMiddlewares = (names: string[]) => {
+  return names.map((name) => middlewares[name]);
+};
+
+export const configureRoutes = (app: Express) => {
   Object.entries(config.services).forEach(([_name, service]) => {
     const hostname = service.url;
     service.routes.forEach((route) => {
       route.methods.forEach((method) => {
         const endpoint = `/api${route.path}`;
-
+        const middleware = getMiddlewares(route.middlewares);
         const handler = createHandler(hostname, route.path, method);
-        app[method](endpoint, handler);
+        app[method](endpoint, middleware, handler);
       });
     });
   });

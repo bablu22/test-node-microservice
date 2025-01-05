@@ -3,9 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import router from "./routes";
-import e from "express";
 
 dotenv.config();
+const PORT = process.env.PORT || 4003;
+const SERVICE_NAME = process.env.SERVICE_NAME || "auth";
 
 const app: Application = express();
 app.use(express.json());
@@ -36,12 +37,12 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);
-  res.status(500).json({ message: err.message || "Something went wrong" });
+  res.status(500).json({
+    source: SERVICE_NAME,
+    message: err.message,
+    error: err,
+  });
 });
-
-const PORT = process.env.PORT || 4003;
-const SERVICE_NAME = process.env.SERVICE_NAME || "auth";
 
 app.listen(PORT, () => {
   console.log(`${SERVICE_NAME} is running on port ${PORT}`);

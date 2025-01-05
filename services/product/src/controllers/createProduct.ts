@@ -30,6 +30,7 @@ const createProduct = async (
       res.status(400).json({
         message: "Product with SKU already exists",
       });
+      return;
     }
 
     const product = await prisma.product.create({
@@ -58,6 +59,7 @@ const createProduct = async (
       ...product,
       inventoryId: inventory.id,
     });
+    return;
   } catch (error) {
     next(error);
   }
