@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { CART_SERVICE, PRODUCT_SERVICE } from "@/config";
 import { z } from "zod";
 import prisma from "@/prisma";
+import sendToQueue from "@/queue";
 
 const checkout = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -79,6 +80,15 @@ const checkout = async (req: Request, res: Response, next: NextFunction) => {
         },
       },
     });
+
+    // send to queue
+    sendToQueue("send-email", JSON.stringify(order));
+    sendToQueue(
+      "clear-cart",
+      JSON.stringify({
+        cartSessionId: parsedBody.data.cartSessionId,
+      }),
+    );
 
     res.status(201).json(order);
     return;

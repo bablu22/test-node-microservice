@@ -10,7 +10,8 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     // validate request body
     const parsedBody = CartItemsSchema.safeParse(req.body);
     if (!parsedBody.success) {
-      return res.status(400).json({ errors: parsedBody.error.errors });
+      res.status(400).json({ errors: parsedBody.error.errors });
+      return;
     }
 
     let cartSessionId = (req.headers["x-cart-session-id"] as string) || null;
@@ -42,7 +43,8 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
       `${INVENTORY_SERVICE}/inventories/${parsedBody.data.inventoryId}`,
     );
     if (Number(data.quantity) < parsedBody.data.quantity) {
-      return res.status(400).json({ message: "Inventory not available" });
+      res.status(400).json({ message: "Inventory not available" });
+      return;
     }
 
     // add item to the cart
@@ -66,9 +68,8 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
       },
     );
 
-    return res
-      .status(200)
-      .json({ message: "Item added to cart", cartSessionId });
+    res.status(200).json({ message: "Item added to cart", cartSessionId });
+    return;
   } catch (error) {
     next(error);
   }

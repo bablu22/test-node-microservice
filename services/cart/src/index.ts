@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import router from "./routes";
+import "./receiver";
 
 dotenv.config();
 const PORT = process.env.PORT || 4006;
